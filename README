@@ -1,0 +1,42 @@
+SubQueryColumn
+==============
+
+モデルのカラムにサブクエリを使用できるようにします。
+車輪の再開発かもしれませんが、探しても他のやり方が出てこなかったので。。
+
+
+Rails
+=======
+
+Rails2.3.2で作りました。
+それ以外は確認してません。
+あと、will_paginateと組み合わせても動作するようです。
+
+
+Install
+=======
+
+script/plugin install http://github.com/ogasyo/sub_query_column.git
+
+
+Usage
+=======
+
+- 使用するモデルにクラスメソッドを書く。
+class item << 
+  sub_query_column :count_sub_items, :type => :integer, :query => "SELECT COUNT(id) FROM sub_items WHERE sub_items.item_id = items.id"
+end
+
+- 上記の場合、"count_sub_items"というインスタンスメソッドが追加されるので、それで値を取得
+
+items = Item.find(:all)
+items.each do |item|
+    p item.count_sub_items
+end
+
+- 実際に発行されるSQLはこんな感じ。
+
+SELECT *, (SELECT COUNT(id) FROM sub_items WHERE sub_items.item_id = items.id") as count_sub_items FROM items;
+
+
+Copyright (c) 2009 ogasyo, released under the MIT license
