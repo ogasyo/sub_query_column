@@ -27,6 +27,11 @@ class item <<
   sub_query_column :count_sub_items, :type => :integer, :query => "SELECT COUNT(id) FROM sub_items WHERE sub_items.item_id = items.id"
 end
 
+- findする時に with_sub_query スコープを追加する
+def index
+  items = Item.with_sub_query.find :all
+end
+
 - 上記の場合、"count_sub_items"というインスタンスメソッドが追加されるので、それで値を取得
 
 items = Item.find(:all)
