@@ -16,6 +16,7 @@ module SubQueryColumn
 
         module ClassMethods
             @@sub_query_columns = {}
+            @@sub_query_columns_keys = []
             
             def sub_query_column(name, options={})
                 return false if name.blank?
@@ -37,18 +38,19 @@ module SubQueryColumn
                 end
                 
                 @@sub_query_columns[name] = options
+                @@sub_query_columns_keys << name
             end
             
             def sub_query_column_get_select(*args)
-                args = @@sub_query_columns.keys if args.first.empty?
-                select = ["*"]
-                args.each do |arg|
-                    key = Symbol === arg ? arg : arg.pop
+                keys = args.flatten || []
+                keys = @@sub_query_columns_keys if keys.empty?
+                select = "*"
+                for key in keys
                     if options = @@sub_query_columns[key]
-                        select << "(#{options[:query]}) AS #{options[:alias_name]}"
+                        select += ", (#{options[:query]}) AS #{options[:alias_name]}"
                     end
                 end
-                return select.join(', ')
+                return select
             end
         end
         
